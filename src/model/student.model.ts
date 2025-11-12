@@ -1,7 +1,7 @@
 import mongoose, { Schema, Document } from "mongoose";
 
 // TypeScript interfaces
-export interface Subject {
+export interface ISubject {
     paperId: string;
     paperCode: string;
     paperName: string;
@@ -15,10 +15,10 @@ export interface Subject {
     grade: string;
 }
 
-export interface Semester {
+export interface ISemester {
     sem: number;
     subjectCount?: number;
-    subjects: Subject[];
+    subjects: ISubject[];
     totalMarks?: number;
     maxMarks?: number;
     totalCredits?: number;
@@ -30,7 +30,7 @@ export interface Semester {
     sgpa?: number;
 }
 
-export interface Student extends Document {
+export interface IStudent extends Document {
     enrollment: string;
     name: string;
     sid?: string;
@@ -39,17 +39,17 @@ export interface Student extends Document {
     batch: string;
     prgCode: string;
     programme: string;
-    semesters: Semester[];
+    semesters: ISemester[];
 }
 
-const semesterSchema = new Schema<Semester>({
+const semesterSchema = new Schema<ISemester>({
     sem: {
         type: Number,
         required: true,
     },
     subjectCount: Number,
     subjects: [
-        new Schema(
+        new Schema<ISubject>(
         {
             paperId: {
                 type: String,
@@ -111,7 +111,7 @@ const semesterSchema = new Schema<Semester>({
     
 },{_id:false});
 
-const studentSchema = new Schema<Student>({
+const studentSchema = new Schema<IStudent>({
     enrollment: {
         type: String,
         required: true,
@@ -145,4 +145,4 @@ const studentSchema = new Schema<Student>({
     semesters: [semesterSchema],
 });
 
-export const StudentModel =  mongoose.models.Student as mongoose.Model<Student> || mongoose.model<Student>("Student", studentSchema);
+export const StudentModel = mongoose.models.Student as mongoose.Model<IStudent> || mongoose.model<IStudent>("Student", studentSchema);
