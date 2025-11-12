@@ -1,7 +1,7 @@
 import { ChatGoogleGenerativeAI } from "@langchain/google-genai";
 import { StateGraph, END, Annotation } from "@langchain/langgraph";
 import { MemorySaver } from "@langchain/langgraph";
-import { HumanMessage, SystemMessage, AIMessage, ToolMessage } from "@langchain/core/messages";
+import { HumanMessage, SystemMessage, AIMessage, ToolMessage, BaseMessage } from "@langchain/core/messages";
 import { allTools } from "@/lib/tools"; // Import tools from separate file
 import { RANKWISE_SYSTEM_MESSAGE } from "@/lib/systemMessage"; // Import system message
 
@@ -17,7 +17,7 @@ const modelWithTools = model.bindTools(allTools);
 
 // Define the agent state using proper Annotation
 const AgentState = Annotation.Root({
-    messages: Annotation<any[]>({
+    messages: Annotation<BaseMessage[]>({
         reducer: (x, y) => x.concat(y),
         default: () => [],
     }),
@@ -37,9 +37,9 @@ async function callModel(state: typeof AgentState.State) {
 
 async function callTool(state: typeof AgentState.State) {
     const messages = state.messages;
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = messages[messages.length - 1] as AIMessage;
     
-    if (!lastMessage.tool_calls) {
+    if (!lastMessage.tool_calls || lastMessage.tool_calls.length === 0) {
         throw new Error("No tool calls found in the last message");
     }
     
@@ -51,7 +51,12 @@ async function callTool(state: typeof AgentState.State) {
             throw new Error(`Tool ${toolCall.name} not found`);
         }
         
+        if (!toolCall.id) {
+            throw new Error("Tool call ID is missing");
+        }
+        
         try {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
             const result = await (tool as any).invoke(toolCall.args);
             toolMessages.push(
                 new ToolMessage({
@@ -76,7 +81,7 @@ async function callTool(state: typeof AgentState.State) {
 // Define routing logic
 function shouldContinue(state: typeof AgentState.State) {
     const messages = state.messages;
-    const lastMessage = messages[messages.length - 1];
+    const lastMessage = messages[messages.length - 1] as AIMessage;
     
     if (lastMessage.tool_calls && lastMessage.tool_calls.length > 0) {
         return "tools";
@@ -112,6 +117,7 @@ export async function POST(request: Request) {
         };
 
         // Invoke the agent
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const result: any = await app.invoke(
             { 
                 messages: [new HumanMessage(message)] 
