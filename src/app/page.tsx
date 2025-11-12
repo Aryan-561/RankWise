@@ -11,10 +11,10 @@ export default function Home() {
         {/* Hero Section */}
         <div className="text-center mb-16">
           <h1 className="text-4xl sm:text-6xl font-bold text-gray-900 dark:text-white mb-6">
-            KIHEAT Ranklist
+            Rankwise 
           </h1>
           <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-            Your comprehensive platform for student rankings, academic results, and intelligent assistance
+            KIHEAT Ranklist's AI Assistant
           </p>
           <div className="flex gap-4 items-center justify-center flex-col sm:flex-row">
             <Link href="/chat">
