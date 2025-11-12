@@ -82,8 +82,8 @@ export const getProgrammeResultTool = tool(
             const res = await axios(`${process.env.SERVER_URL}/api/v1/programme/${programme}/${batch}`);
             const data: StudentProjection[] = res.data.data;
             
-             const sortData = data?.sort((a: any, b: any) => {
-                return b?.cgpa - a?.cgpa || b?.gpa - a?.gpa; 
+             const sortData = data?.sort((a: StudentProjection, b: StudentProjection) => {
+                return (b?.cgpa || 0) - (a?.cgpa || 0); 
                 });
             let i = 1;
             const summary = {
@@ -152,7 +152,7 @@ export const allTools = [
 ];
 
 // Export individual tools for specific use cases
-export default {
+const toolsExport = {
     getStudentDataTool,
     getTopStudentsTool,
     getProgrammeBatchTool,
@@ -160,3 +160,5 @@ export default {
     getStudentsByNameTool,
     allTools,
 };
+
+export default toolsExport;
