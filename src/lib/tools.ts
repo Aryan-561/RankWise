@@ -82,17 +82,22 @@ export const getProgrammeResultTool = tool(
             const res = await axios(`${process.env.SERVER_URL}/api/v1/programme/${programme}/${batch}`);
             const data: StudentProjection[] = res.data.data;
             
+             const sortData = data?.sort((a: any, b: any) => {
+                return b?.cgpa - a?.cgpa || b?.gpa - a?.gpa; 
+                });
+            let i = 1;
             const summary = {
-                totalStudent: data.length,
-                topStudent: data.slice(0, 5).map((student: StudentProjection) => ({
+                totalStudent: sortData.length,
+                topStudent: sortData.slice(0, 10).map((student: StudentProjection) => ({
                     name: student.name,
                     enrollment: student.enrollment,
                     programme: student.programme,
                     batch: student.batch,
                     percentage: student.percentage,
-                    cgpa: student.cgpa
+                    cgpa: student.cgpa,
+                    rank: i++
                 })),
-                avgCGPA: (data.reduce((acc: number, curr: StudentData) => acc + (curr.cgpa || 0), 0) / data.length).toFixed(3),
+                avgCGPA: (sortData.reduce((acc: number, curr: StudentData) => acc + (curr.cgpa || 0), 0) / sortData.length).toFixed(3),
             };
             
             return JSON.stringify(summary, null, 2);
