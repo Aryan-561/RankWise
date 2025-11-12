@@ -1,4 +1,3 @@
-import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,7 +13,7 @@ export default function Home() {
             Rankwise 
           </h1>
           <p className="text-xl sm:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
-            KIHEAT Ranklist's AI Assistant
+            KIHEAT Ranklist&apos;s AI Assistant
           </p>
           <div className="flex gap-4 items-center justify-center flex-col sm:flex-row">
             <Link href="/chat">
